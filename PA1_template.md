@@ -85,7 +85,7 @@ max_steps
 
 
 
-## Imputing missing values
+## Inputing missing values
 1. Calculate and report the total number of missing values 
  in the dataset (i.e. the total number of rows with NAs)
 
@@ -104,13 +104,15 @@ missing
  sophisticated. For example, you could use the mean/median 
  for that day, or the mean for that 5-minute interval, etc.
 
+I decided to fill in the NA's of this dataset with "0's".
+
  3. Create a new dataset that is equal to the original 
  dataset but with the missing data filled in. 
 
 
 ```r
 activity2 <- activity
-activity2$steps[is.na(activity2$steps)] <- mean_steps
+activity2[is.na(activity2$steps),]$steps <- 0
 ```
 
  4. Make a histogram of the total number of steps taken 
@@ -121,8 +123,8 @@ each day
 total2_steps <- tapply(activity2$steps, activity2$date, sum)
 hist(total2_steps, ylab="Count", xlab="Steps",
      main="Total Number of Steps Per Day",
-     sub="(NA's changed to Mean)",
-     col="coral", breaks = 5)
+     sub="(NA's changed to 0)",
+     col="coral", breaks = 20)
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
@@ -136,7 +138,7 @@ mean2_steps
 ```
 
 ```
-## [1] 362668.1
+## [1] 9354.23
 ```
 
 ```r
@@ -145,16 +147,18 @@ med2_steps
 ```
 
 ```
-## [1] 11458
+## [1] 10395
 ```
 
 Do these values differ from the estimates from the first  part of the assignment?   
-Yes!
+
+No.
  
  
 What is the impact of inputing missing data on the estimates of the total daily number of steps?  
 
-Adding in in the mean of the total number of steps for the missing data, increases the total, especially at the beginning and the end of the dataset where the most missing data was.  
+The NA's were ignored when creating the first set, so
+making them "0's", didn't make a difference.
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
