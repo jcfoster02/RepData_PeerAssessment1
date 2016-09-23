@@ -1,72 +1,65 @@
----
-title: "Activity Monitoring"
-author: "Julie Foster"
-date: "September 22, 2016"
-output: html_document
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-## Introduction
-
-It is now possible to collect a large amount of data about personal movement using activity monitoring devices such as a Fitbit, Nike Fuelband, or Jawbone Up. These type of devices are part of the “quantified self” movement – a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. But these data remain under-utilized both because the raw data are hard to obtain and there is a lack of statistical methods and software for processing and interpreting the data.   
-This assignment makes use of data from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.   
-The data for this assignment can be downloaded from the course web site:   
-*	Dataset: Activity monitoring data [52K]   
-The variables included in this dataset are:   
-*	steps: Number of steps taking in a 5-minute interval (missing values are coded as NA)   
-*	date: The date on which the measurement was taken in YYYY-MM-DD format   
-*	interval: Identifier for the 5-minute interval in which measurement was taken   
-The dataset is stored in a comma-separated-value (CSV) file and there are a total of 17,568 observations in this dataset.
+# Reproducible Research: Peer Assessment 1
 
 
-### Loading and preprocessing the data
+## Loading and preprocessing the data
 
-```{r}
-if(!file.exists("data")){dir.create("data")}
-fileUrl <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
-download.file(fileUrl,destfile="./data/activity.zip")
-dataDownloaded <- date()
-unzip(zipfile="./data/repdata_data_activity.zip",exdir="./data")
+```r
+unzip(zipfile="activity.zip")
 
-activity <- read.csv("./data/activity.csv", head=TRUE)
+activity <- read.csv("activity.csv", head=TRUE)
 
 library(plyr)
 library(ggplot2)
 ```
 
-### What is mean total number of steps taken per day?
+
+## What is mean total number of steps taken per day?
+
  1. Calculate the total number of steps take per day
 
-```{r}
+
+```r
 total_steps <- tapply(activity$steps, activity$date, sum, na.rm=TRUE)
 ```
 
  2. Make a histogram of the total number of steps taken each day.
 
-```{r}
+
+```r
 hist(total_steps, ylab="Count", xlab="Steps",
      main="Total Number of Steps Per Day",
      col="blue", breaks = 20)
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+
  3. Calculate and report the mean and median of the total number of steps
 
-```{r}
+
+```r
 mean_steps <- mean(total_steps)
 mean_steps
+```
 
+```
+## [1] 9354.23
+```
+
+```r
 med_steps <- median(total_steps)
 med_steps
 ```
 
-### What is the average daily activity pattern?
+```
+## [1] 10395
+```
+
+## What is the average daily activity pattern?
  1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) 
  and the average number of steps taken, averaged across all days (y-axis)
 
-```{r}
+
+```r
 avg_steps <- tapply(activity$steps, activity$interval, mean, na.rm=TRUE)
 
 plot(row.names(avg_steps), avg_steps, type="l",
@@ -74,21 +67,36 @@ plot(row.names(avg_steps), avg_steps, type="l",
      main="Average Daily Activity Pattern")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+
  2. Which 5-minute interval, on average across all the days in the dataset, 
  contains the maximum number of steps?
 
-```{r}
+
+```r
 max_steps <- which.max(avg_steps)
 max_steps
 ```
 
-### Inputing missing values
+```
+## 835 
+## 104
+```
+
+
+
+## Imputing missing values
 1. Calculate and report the total number of missing values 
  in the dataset (i.e. the total number of rows with NAs)
 
-```{r}
+
+```r
 missing <- sum(is.na(activity$steps))
 missing
+```
+
+```
+## [1] 2304
 ```
 
 2. Devise a strategy for filling in all of the missing 
@@ -99,7 +107,8 @@ missing
  3. Create a new dataset that is equal to the original 
  dataset but with the missing data filled in. 
 
-```{r}
+
+```r
 activity2 <- activity
 activity2$steps[is.na(activity2$steps)] <- mean_steps
 ```
@@ -107,7 +116,8 @@ activity2$steps[is.na(activity2$steps)] <- mean_steps
  4. Make a histogram of the total number of steps taken 
 each day 
 
-```{r}
+
+```r
 total2_steps <- tapply(activity2$steps, activity2$date, sum)
 hist(total2_steps, ylab="Count", xlab="Steps",
      main="Total Number of Steps Per Day",
@@ -115,14 +125,27 @@ hist(total2_steps, ylab="Count", xlab="Steps",
      col="coral", breaks = 5)
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
+
  Calculate and report the mean and median total number of steps taken per day. 
 
-```{r}
+
+```r
 mean2_steps <- mean(total2_steps)
 mean2_steps
+```
 
+```
+## [1] 362668.1
+```
+
+```r
 med2_steps <- median(total2_steps)
 med2_steps
+```
+
+```
+## [1] 11458
 ```
 
 Do these values differ from the estimates from the first  part of the assignment?   
@@ -133,16 +156,25 @@ What is the impact of inputing missing data on the estimates of the total daily 
 
 Adding in in the mean of the total number of steps for the missing data, increases the total, especially at the beginning and the end of the dataset where the most missing data was.  
 
-### Are there differences in activity patterns between weekdays and weekends?
+
+## Are there differences in activity patterns between weekdays and weekends?
  1. Create a new factor variable in the dataset with two 
     levels – “weekday” and “weekend” indicating whether a 
      given date is a weekday or weekend day.
 
-```{r}
+
+```r
 activity2$date <- as.Date(activity2$date)
 activity2$days <- factor(format(activity2$date, "%A"))
 levels(activity2$days)
+```
 
+```
+## [1] "Friday"    "Monday"    "Saturday"  "Sunday"    "Thursday"  "Tuesday"  
+## [7] "Wednesday"
+```
+
+```r
 levels(activity2$days) <- list(weekday = c("Monday", "Tuesday", "Wednesday", 
                                                      "Thursday", "Friday"), weekend = c("Saturday", "Sunday"))
 ```
@@ -152,7 +184,8 @@ levels(activity2$days) <- list(weekday = c("Monday", "Tuesday", "Wednesday",
    the average number of steps taken, averaged across all 
    weekday days or weekend days (y-axis). 
 
-```{r}
+
+```r
 Interval <- aggregate(activity2$steps, 
     by=list(activity2$days, activity2$interval), mean)
 names(Interval) = c("day", "interval", "avg.steps")
@@ -162,4 +195,6 @@ g <- ggplot(Interval, aes(interval, avg.steps, color=day))
 g + geom_line() + facet_wrap(~day, nrow=2, ncol=1) +
     labs(title = "Average Daily Steps by Day of Week", 
          x = "5-minute Interval", y = "Average Number of Steps") 
-```   
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-12-1.png)<!-- -->

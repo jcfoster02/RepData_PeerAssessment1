@@ -9,13 +9,9 @@
 
 ##  Loading and preprocessing the data
 
-#if(!file.exists("data")){dir.create("data")}
-#fileUrl <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
-#download.file(fileUrl,destfile="./data/activity.zip")
-#dataDownloaded <- date()
-#unzip(zipfile="./data/repdata_data_activity.zip",exdir="./data")
+unzip(zipfile="activity.zip")
 
-activity <- read.csv("./data/activity.csv", head=TRUE)
+activity <- read.csv("activity.csv", head=TRUE)
 
 library(plyr)
 library(ggplot2)
@@ -31,7 +27,7 @@ total_steps <- tapply(activity$steps, activity$date, sum, na.rm=TRUE)
 hist(total_steps, ylab="Count", xlab="Steps",
      main="Total Number of Steps Per Day",
      col="blue", breaks = 20)
-    
+
 # 3. Calculate and report the mean and median of the total number of steps
 
 mean_steps <- mean(total_steps)
@@ -108,7 +104,7 @@ activity2$days <- factor(format(activity2$date, "%A"))
 levels(activity2$days)
 
 levels(activity2$days) <- list(weekday = c("Monday", "Tuesday", "Wednesday", 
-                                                     "Thursday", "Friday"), weekend = c("Saturday", "Sunday"))
+                                           "Thursday", "Friday"), weekend = c("Saturday", "Sunday"))
 
 # 2. Make a panel plot containing a time series plot 
 #   (i.e. type = "l") of the 5-minute interval (x-axis) and 
@@ -116,7 +112,7 @@ levels(activity2$days) <- list(weekday = c("Monday", "Tuesday", "Wednesday",
 #   weekday days or weekend days (y-axis). 
 
 Interval <- aggregate(activity2$steps, 
-    by=list(activity2$days, activity2$interval), mean)
+                      by=list(activity2$days, activity2$interval), mean)
 names(Interval) = c("day", "interval", "avg.steps")
 
 
@@ -124,4 +120,3 @@ g <- ggplot(Interval, aes(interval, avg.steps, color=day))
 g + geom_line() + facet_wrap(~day, nrow=2, ncol=1) +
     labs(title = "Average Daily Steps by Day of Week", 
          x = "Interval", y = "Number of Steps") 
-    
